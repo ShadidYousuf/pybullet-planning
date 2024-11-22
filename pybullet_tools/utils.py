@@ -1596,7 +1596,7 @@ def get_image_at_pose(camera_pose, camera_matrix=None, far=5.0, **kwargs):
     camera_point = point_from_pose(camera_pose)
     target_point = tform_point(camera_pose, np.array([0, 0, far]))
     camera_quat = quat_from_pose(camera_pose)
-    up_vector = tform_point(pose_from_quat(camera_quat), np.array([1, 0, 0])) # TOOD: ineffective
+    up_vector = tform_point(pose_from_quat(camera_quat), np.array([1, 0, 0])) # TODO: ineffective
     return get_image(camera_point, target_point, up_vector=up_vector, far=far, **kwargs)
 
 def set_default_camera(yaw=160, pitch=-35, distance=2.5):
@@ -4053,7 +4053,7 @@ def adjust_path(robot, joints, path, initial_conf=None):
     if path is None:
         return path
     if initial_conf is not None:
-        path = [initial_conf] + list(path)
+        path = [initial_conf] + list(path)[1:]
     difference_fn = get_difference_fn(robot, joints)
     adjusted_path = [np.array(path[0])]
     for conf in path[1:]:
@@ -5609,6 +5609,8 @@ def tform_point(affine, point):
     return point_from_pose(multiply(affine, Pose(point=point)))
 
 def tform_points(affine, points):
+    if len(points) == 0:
+        return points
     #return [tform_point(affine, p) for p in points]
     tform = tform_from_pose(affine)
     points_homogenous = np.vstack([np.vstack(points).T, np.ones(len(points))])
